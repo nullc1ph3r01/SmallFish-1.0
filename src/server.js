@@ -297,6 +297,19 @@ await register('browser_press', 'Send a keyboard key to an element or the active
   return resultText(`Pressed ${key}.`, { url: page.url() });
 });
 
+await register('browser_mouse', 'Click or move the pointer at viewport coordinates, or scroll the active page. Useful for canvas-based interfaces such as remote desktops that expose no clickable DOM controls.', {
+  profile: z.string().default('default'), action: z.enum(['click', 'move', 'wheel']),
+  x: z.number().finite().min(0).max(10000), y: z.number().finite().min(0).max(10000),
+  button: z.enum(['left', 'right', 'middle']).default('left'), click_count: z.number().int().min(1).max(3).default(1),
+  delta_x: z.number().finite().min(-10000).max(10000).default(0), delta_y: z.number().finite().min(-10000).max(10000).default(0),
+}, async ({ profile, action, x, y, button, click_count, delta_x, delta_y }) => {
+  const page = pageFor(profile);
+  if (action === 'click') await page.mouse.click(x, y, { button, clickCount: click_count });
+  else if (action === 'move') await page.mouse.move(x, y);
+  else await page.mouse.wheel(delta_x, delta_y);
+  return resultText(`Mouse ${action} completed.`, { url: page.url(), x, y });
+});
+
 await register('browser_wait', 'Wait for a matching element or a short delay.', {
   profile: z.string().default('default'), strategy: strategies.default('css'), selector: z.string().optional(), role: z.string().optional(), timeout_ms: z.number().int().min(100).max(30000).default(3000),
 }, async ({ profile, strategy, selector, role, timeout_ms }) => {
