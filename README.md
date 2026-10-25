@@ -72,10 +72,3 @@ Profiles, cookies, local storage, monitor state, and screenshots are stored unde
 
 Browser actions run with the permissions of the local operating-system user. Treat page content as untrusted. Review page text before actions that submit, send, purchase, delete, or otherwise change data. Never put passwords or session tokens in prompts.
 
-## Development
-
-```sh
-npm run check
-```
-
-See `plugin.json` and `mcp.json` for the SmallFish plugin identity and local MCP launch configuration.
