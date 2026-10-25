@@ -43,6 +43,8 @@ Secure MCP Tunnel keeps the server private; it does not publish the plugin for o
 
 The MCP exposes browser controls, page reading/search, public web search and fetch/research, screenshots, and manually checked page monitors. Monitoring is on demand; there is no background scheduler or push notification.
 
+For course syllabi, `browser_outline` returns the numbered hierarchy, parent section, completion state, progress ring, and whether a row contains hands-on content. Use the inventory to review every subsection, then inspect the linked lesson and its answer fields. Hands-on markers flag activities that need a lab environment; they do not indicate a knowledge question or completion state.
+
 ## Authorized penetration testing
 
 For web applications you own or are explicitly authorized to assess, SmallFish can support manual, browser-based testing by:
