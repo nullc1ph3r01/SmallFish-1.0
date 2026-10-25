@@ -45,7 +45,7 @@ The MCP exposes browser controls, page reading/search, public web search and fet
 
 For course syllabi, `browser_outline` returns the numbered hierarchy, parent section, completion state, progress ring, and whether a row contains hands-on content. Use the inventory to review every subsection, then inspect the linked lesson and its answer fields. Hands-on markers flag activities that need a lab environment; they do not indicate a knowledge question or completion state.
 
-`browser_read_page` also associates answer textareas with their surrounding task prompt and reports whether the task is already completed, so task cards can be inventoried even when their placeholder text is not rendered in the page body.
+`browser_read_page` also associates answer textareas with their surrounding task prompt and reports whether the task is already completed, so task cards can be inventoried even when their placeholder text is not rendered in the page body. `browser_mouse` supports canvas-based pages and remote desktops that cannot be operated through ordinary buttons.
 
 ## Authorized penetration testing
 
@@ -66,7 +66,7 @@ Example requests:
 
 ## Tools
 
-- Browser: `browser_start`, `browser_profiles`, `browser_navigate`, `browser_tabs`, `browser_back`, `browser_wait`, `browser_read_page`, `browser_search_page`, `browser_outline`, `browser_click`, `browser_fill`, `browser_select`, `browser_press`, `browser_screenshot`, `browser_close`
+- Browser: `browser_start`, `browser_profiles`, `browser_navigate`, `browser_tabs`, `browser_back`, `browser_wait`, `browser_read_page`, `browser_search_page`, `browser_outline`, `browser_click`, `browser_fill`, `browser_select`, `browser_press`, `browser_mouse`, `browser_screenshot`, `browser_close`
 - Public web: `web_search`, `web_fetch`, `web_research`
 - On-demand monitors: `monitor_create`, `monitor_list`, `monitor_check`, `monitor_delete`
 
