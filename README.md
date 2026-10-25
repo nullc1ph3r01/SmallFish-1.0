@@ -45,6 +45,8 @@ The MCP exposes browser controls, page reading/search, public web search and fet
 
 For course syllabi, `browser_outline` returns the numbered hierarchy, parent section, completion state, progress ring, and whether a row contains hands-on content. Use the inventory to review every subsection, then inspect the linked lesson and its answer fields. Hands-on markers flag activities that need a lab environment; they do not indicate a knowledge question or completion state.
 
+`browser_read_page` also associates answer textareas with their surrounding task prompt and reports whether the task is already completed, so task cards can be inventoried even when their placeholder text is not rendered in the page body.
+
 ## Authorized penetration testing
 
 For web applications you own or are explicitly authorized to assess, SmallFish can support manual, browser-based testing by:
