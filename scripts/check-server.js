@@ -14,7 +14,7 @@ const client = new Client({ name: 'smallfish-check', version: '1.0.0' });
 try {
   await client.connect(transport);
   const { tools } = await client.listTools();
-  const required = ['browser_start', 'browser_read_page', 'browser_search_page', 'browser_outline', 'browser_screenshot', 'browser_close', 'web_search', 'monitor_check'];
+  const required = ['browser_start', 'browser_read_page', 'browser_search_page', 'browser_outline', 'browser_mouse', 'browser_screenshot', 'browser_close', 'web_search', 'monitor_check'];
   const missing = required.filter(name => !tools.some(tool => tool.name === name));
   if (missing.length) throw new Error(`Missing tools: ${missing.join(', ')}`);
 
