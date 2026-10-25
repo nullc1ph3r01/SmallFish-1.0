@@ -1,0 +1,29 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "smallfish",
+  "version": "1.0.0",
+  "description": "SmallFish local browser automation, page reading, web research, and on-demand page monitoring.",
+  "author": {
+    "name": "SmallFish Contributors"
+  },
+  "license": "MIT",
+  "keywords": ["browser", "automation", "playwright", "mcp", "research"],
+  "extensions": {
+    "com.openai": {
+      "onboardingSkill": "./skills/setup/SKILL.md",
+      "interface": {
+        "displayName": "SmallFish",
+        "shortDescription": "Use a browser running on your computer.",
+        "longDescription": "Navigate and inspect websites, interact with pages, research public information, take screenshots, and check pages on demand. Browser profiles and sign-ins remain on the local computer.",
+        "developerName": "SmallFish",
+        "category": "Productivity",
+        "capabilities": ["Read", "Write"],
+        "defaultPrompt": [
+          "Use SmallFish to open a website and summarize its visible content.",
+          "Use SmallFish to inspect this page and find a specific control without submitting anything."
+        ],
+        "brandColor": "#5B5BD6"
+      }
+    }
+  }
+}
