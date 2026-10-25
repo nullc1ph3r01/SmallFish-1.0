@@ -43,6 +43,23 @@ Secure MCP Tunnel keeps the server private; it does not publish the plugin for o
 
 The MCP exposes browser controls, page reading/search, public web search and fetch/research, screenshots, and manually checked page monitors. Monitoring is on demand; there is no background scheduler or push notification.
 
+## Authorized penetration testing
+
+For web applications you own or are explicitly authorized to assess, SmallFish can support manual, browser-based testing by:
+
+- Listing visible forms and input controls with their labels, types, names, and nearby page context.
+- Navigating in-scope pages and recording links, validation messages, and normal application behavior.
+- Filling fields with tester-provided values and summarizing the visible response. It does not submit a form when using `browser_fill`; ask explicitly before taking a separate submit action.
+- Capturing screenshots and organizing repeatable observations for test notes.
+
+Use a dedicated test account and stay within the written scope and approved test window. Do not use SmallFish to probe systems without permission, guess credentials, run broad automated scans, bypass access controls, or perform destructive actions. SmallFish is a browser automation assistant; it does not replace a dedicated security scanner or a tester's review.
+
+Example requests:
+
+- “On this in-scope staging site, list every visible input by label and type. Do not change anything.”
+- “Using my approved test account, fill the search box with this test value and describe the visible response. Do not submit the form.”
+- “Capture the current page and summarize its validation messages for my authorized test notes.”
+
 ## Tools
 
 - Browser: `browser_start`, `browser_profiles`, `browser_navigate`, `browser_tabs`, `browser_back`, `browser_wait`, `browser_read_page`, `browser_search_page`, `browser_outline`, `browser_click`, `browser_fill`, `browser_select`, `browser_press`, `browser_screenshot`, `browser_close`
