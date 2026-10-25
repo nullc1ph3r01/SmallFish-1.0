@@ -203,6 +203,14 @@ await register('browser_outline', 'List numbered section-like controls and their
     const candidates = [...document.querySelectorAll('button,[role="button"],[role="treeitem"],a')].filter(el => /^\d+(?:\.\d+)*\.\s/.test((el.innerText || el.getAttribute('aria-label') || '').trim()));
     const allRows = candidates.map((el, index) => {
       let row = el.closest('li,[role="treeitem"],[data-testid]') || el.parentElement;
+      const ancestry = []; let node = el;
+      for (let depth = 0; node && depth < 4; depth++, node = node.parentElement) {
+        const attrs = {};
+        for (const name of ['role','aria-label','aria-current','aria-checked','aria-expanded','aria-valuenow','data-state','data-status','title']) {
+          const value = node.getAttribute?.(name); if (value) attrs[name] = value;
+        }
+        ancestry.push({ tag: node.tagName?.toLowerCase(), class: typeof node.className === 'string' ? node.className.slice(0, 160) : '', attrs, text: (node.innerText || '').trim().slice(0, 200) });
+      }
       const root = row || el.parentElement || el;
       const icons = [...root.querySelectorAll('svg,[role="img"],[role="progressbar"]')].slice(0, 5).map(icon => {
         const style = getComputedStyle(icon);
@@ -217,7 +225,7 @@ await register('browser_outline', 'List numbered section-like controls and their
       const statusIcon = icons.find(icon => /text-success-500/.test(icon.class));
       const progressRing = icons.find(icon => icon.progressRatio !== null || /stroke-muted-foreground\/30/.test(icon.html));
       const status = statusIcon ? 'completed' : progressRing?.progressRatio > 0 ? 'in_progress' : progressRing ? 'not_started' : 'unknown';
-      return { index, label, number, depth, href: el.href || null, status, progressPercent: progressRing?.progressRatio == null ? (status === 'completed' ? 100 : null) : Math.round(progressRing.progressRatio * 100), containsHandsOnContent: icons.some(icon => /contains hands-on content/i.test(icon.label)), statusEvidence: statusIcon ? statusIcon.class : progressRing?.html?.match(/stroke-dasharray="[^"]+"/)?.[0] || progressRing?.class || 'no recognizable status marker', icons };
+      return { index, label, number, depth, href: el.href || null, status, progressPercent: progressRing?.progressRatio == null ? (status === 'completed' ? 100 : null) : Math.round(progressRing.progressRatio * 100), containsHandsOnContent: icons.some(icon => /contains hands-on content/i.test(icon.label)), statusEvidence: statusIcon ? statusIcon.class : progressRing?.html?.match(/stroke-dasharray="[^"]+"/)?.[0] || progressRing?.class || 'no recognizable status marker', icons, ancestry };
     });
     const rows = allRows.slice(0, max_items).map(item => {
       const parentNumber = item.number.includes('.') ? item.number.slice(0, item.number.lastIndexOf('.')) : null;
