@@ -201,24 +201,35 @@ await register('browser_outline', 'List numbered section-like controls and their
   const page = pageFor(profile);
   const outline = await page.evaluate(({ max_items }) => {
     const candidates = [...document.querySelectorAll('button,[role="button"],[role="treeitem"],a')].filter(el => /^\d+(?:\.\d+)*\.\s/.test((el.innerText || el.getAttribute('aria-label') || '').trim()));
-    const rows = candidates.slice(0, max_items).map((el, index) => {
+    const allRows = candidates.map((el, index) => {
       let row = el.closest('li,[role="treeitem"],[data-testid]') || el.parentElement;
-      const ancestry = []; let node = el;
-      for (let depth = 0; node && depth < 4; depth++, node = node.parentElement) {
-        const attrs = {};
-        for (const name of ['role','aria-label','aria-current','aria-checked','aria-expanded','aria-valuenow','data-state','data-status','title']) {
-          const value = node.getAttribute?.(name); if (value) attrs[name] = value;
-        }
-        ancestry.push({ tag: node.tagName?.toLowerCase(), class: typeof node.className === 'string' ? node.className.slice(0, 160) : '', attrs, text: (node.innerText || '').trim().slice(0, 200) });
-      }
       const root = row || el.parentElement || el;
       const icons = [...root.querySelectorAll('svg,[role="img"],[role="progressbar"]')].slice(0, 5).map(icon => {
         const style = getComputedStyle(icon);
-        return { tag: icon.tagName.toLowerCase(), label: icon.getAttribute('aria-label') || icon.querySelector('title')?.textContent || '', role: icon.getAttribute('role'), valueNow: icon.getAttribute('aria-valuenow'), class: icon.getAttribute('class') || '', color: style.color, fill: style.fill, stroke: style.stroke, html: icon.outerHTML.slice(0, 500) };
+        const html = icon.outerHTML;
+        const dash = html.match(/stroke-dasharray="([\d.]+)\s+([\d.]+)"/);
+        const ratio = dash ? Math.min(1, Number(dash[1]) / Number(dash[2])) : null;
+        return { tag: icon.tagName.toLowerCase(), label: icon.getAttribute('aria-label') || icon.querySelector('title')?.textContent || '', role: icon.getAttribute('role'), valueNow: icon.getAttribute('aria-valuenow'), class: icon.getAttribute('class') || '', progressRatio: ratio, html: html.slice(0, 500) };
       });
-      return { index, label: (el.innerText || el.getAttribute('aria-label') || '').trim().replace(/\s+/g, ' '), href: el.href || null, icons, ancestry };
+      const label = (el.innerText || el.getAttribute('aria-label') || '').trim().replace(/\s+/g, ' ');
+      const number = label.match(/^(\d+(?:\.\d+)*)\./)?.[1] || '';
+      const depth = number ? number.split('.').length - 1 : 0;
+      const statusIcon = icons.find(icon => /text-success-500/.test(icon.class));
+      const progressRing = icons.find(icon => icon.progressRatio !== null || /stroke-muted-foreground\/30/.test(icon.html));
+      const status = statusIcon ? 'completed' : progressRing?.progressRatio > 0 ? 'in_progress' : progressRing ? 'not_started' : 'unknown';
+      return { index, label, number, depth, href: el.href || null, status, progressPercent: progressRing?.progressRatio == null ? (status === 'completed' ? 100 : null) : Math.round(progressRing.progressRatio * 100), containsHandsOnContent: icons.some(icon => /contains hands-on content/i.test(icon.label)), statusEvidence: statusIcon ? statusIcon.class : progressRing?.html?.match(/stroke-dasharray="[^"]+"/)?.[0] || progressRing?.class || 'no recognizable status marker', icons };
     });
-    return { total: candidates.length, truncated: candidates.length > rows.length, rows };
+    const rows = allRows.slice(0, max_items).map(item => {
+      const parentNumber = item.number.includes('.') ? item.number.slice(0, item.number.lastIndexOf('.')) : null;
+      const parent = parentNumber ? allRows.find(candidate => candidate.number === parentNumber) : null;
+      return { ...item, parent: parent?.label || null };
+    });
+    const bodyText = document.body?.innerText || '';
+    const sectionProgress = bodyText.match(/(\d+)\s*\/\s*(\d+)\s*Sections/i);
+    const labProgress = bodyText.match(/(\d+)\s*\/\s*(\d+)\s*Labs/i);
+    return { total: candidates.length, truncated: candidates.length > rows.length,
+      sectionProgress: sectionProgress ? { completed: Number(sectionProgress[1]), total: Number(sectionProgress[2]) } : null,
+      labProgress: labProgress ? { completed: Number(labProgress[1]), total: Number(labProgress[2]) } : null, rows };
   }, { max_items });
   return resultText(JSON.stringify({ url: page.url(), ...outline }, null, 2));
 });
