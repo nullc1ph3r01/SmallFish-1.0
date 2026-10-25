@@ -1,0 +1,17 @@
+{
+  "name": "smallfish",
+  "interface": {
+    "displayName": "SmallFish"
+  },
+  "plugins": [
+    {
+      "name": "smallfish",
+      "source": "./",
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
