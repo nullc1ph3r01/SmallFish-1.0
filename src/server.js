@@ -151,6 +151,14 @@ await register('browser_read_page', 'Read a page in chunks, with links and a pag
       const type = e.getAttribute('type');
       const text = (e.innerText || (type === 'password' ? '[redacted]' : e.value) || '').trim().slice(0, 160);
       const row = e.closest('li,[role="treeitem"],[data-testid]') || e.parentElement;
+      let taskContext = null; let ancestor = e;
+      for (let depth = 0; ancestor && depth < 9; depth++, ancestor = ancestor.parentElement) {
+        const contextText = (ancestor.innerText || '').replace(/\s+/g, ' ').trim();
+        if (/\bTask\s*[·:]\s*/i.test(contextText) && /\bSubmit\b/i.test(contextText)) {
+          taskContext = { depth, text: contextText.slice(0, 1800), status: /Verified|Solved|Completed/i.test(contextText) ? 'completed' : 'unanswered' };
+          break;
+        }
+      }
       const iconRoot = e.parentElement || e;
       const icons = [...iconRoot.querySelectorAll('svg,[role="img"]')].slice(0, 3).map(icon => {
         const style = getComputedStyle(icon);
@@ -161,7 +169,7 @@ await register('browser_read_page', 'Read a page in chunks, with links and a pag
         label: e.getAttribute('aria-label') || e.labels?.[0]?.innerText || '', placeholder: e.getAttribute('placeholder'), text,
         disabled: !!e.disabled, expanded: e.getAttribute('aria-expanded'), current: e.getAttribute('aria-current'), checked: e.getAttribute('aria-checked'),
         state: e.getAttribute('data-state'), class: typeof e.className === 'string' ? e.className.slice(0, 180) : '',
-        rowText: (row?.innerText || '').trim().slice(0, 220), rowClass: typeof row?.className === 'string' ? row.className.slice(0, 180) : '', icons,
+        rowText: (row?.innerText || '').trim().slice(0, 220), rowClass: typeof row?.className === 'string' ? row.className.slice(0, 180) : '', icons, taskContext,
       };
     });
     return { text, links, linkCount: allLinks.length, controls, controlCount: allControls.length };
